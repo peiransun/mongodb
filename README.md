@@ -127,7 +127,7 @@ try {
     console.log("Unable to connect to db");
 }
 ```
-
+***
 ## 請注意，MongoDB服務器上不必存在數據庫。它將由MongoDB服務器通過第一次保存操作自動創建。這同樣適用於收藏品。
 
 完整代碼可在此處獲得。如果您有任何疑問，請在評論中告訴我。DbClient.connect方法的最終版本如下所示：
