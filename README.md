@@ -39,7 +39,7 @@ npm install @types/mongodb –save-dev
 ## 在單例對像中存儲數據庫連接
 為了避免在查詢數據庫之前每次都連接到MongoDB，我們將把打開的連接存儲在singleton對像中。讓我們創建一個新文件DbClient.ts並將其保存在公共 文件夾中。單例類將如下所示：
 
-''' typescript
+``` typescript
 import { MongoClient, Db } from "mongodb";
 
 class DbClient {
@@ -49,14 +49,14 @@ class DbClient {
 }
 
 export = new DbClient();
-'''
+```
 
 在第一行中，我們從mongodb包導入了  MongoClient和Db類型。DbClient類包含一個方法connect（），我們將連接到MongoDB數據庫，然後將連接保存為類成員。在最後一行中，我們導出了一個DbClient類的新實例。每次我們通過調用使用/加載DbClient時都會返回該實例 import DbClient = require(“../common/DbClient”);
 
 ## 連接數據庫 - 回調方法
 現在讓我們添加使用MongoClient並連接到數據庫。默認情況下，MongoClient允許您將回調函數作為最後一個參數傳遞，該參數將在建立連接或發生錯誤時調用。
 
-''' typescript
+``` typescript
 MongoClient.connect("mongodb://localhost:27017/test", (err, db) => {
      if(err) {
          console.log(err);
@@ -64,12 +64,12 @@ MongoClient.connect("mongodb://localhost:27017/test", (err, db) => {
          this.db = db;
      } 
  });
-'''
+```
 
 ## 連接到數據庫 - 承諾方法
 您也可以跳過傳遞回調函數，然後MongoClient將返回一個新的Promise。
 
-''' typescript
+``` typescript
 return MongoClient.connect("mongodb://localhost:27017/test")
     .then(db => {
         this.db = db;
@@ -77,12 +77,12 @@ return MongoClient.connect("mongodb://localhost:27017/test")
     .catch(err => {
         console.log(err);
     });
-'''
+```
 
 ## 連接到數據庫 - 異步/等待方法
 從Typescript 2.1開始，您也可以使用async / await方法 - 即使您需要將TypesScript代碼轉換為ES5或ES3版本的Javascript。您可以async/await在TypeScript Deep Dive在線書籍  和Marius Schulz的博客中閱讀有關Typescript的  更多信息 （BTW。我建議將這兩個網站添加到您的書籤中！）。
 
-''' typescript
+``` typescript
 try {
     this.db = await MongoClient.connect("mongodb://localhost:27017/test");
     console.log("Connected to db");
@@ -90,14 +90,14 @@ try {
 } catch (error) {
     console.log("Unable to connect to db");
 }
-'''
+```
 
 ## 利用DbClient
 DbClient已準備就緒。在主應用程序文件app.ts中，讓我們通過調用導入它  
 import DbClient = require("./common/DbClient");
 ，然後我們可以嘗試連接到數據庫並運行基本查詢：
 
-''' typescript
+``` typescript
 try {
     let db = await DbClient.connect();
 
@@ -120,16 +120,16 @@ try {
 } catch (error) {
     console.log("Unable to connect to db");
 }
-'''
+```
 
 ## 請注意，MongoDB服務器上不必存在數據庫。它將由MongoDB服務器通過第一次保存操作自動創建。這同樣適用於收藏品。
 
 完整代碼可在此處獲得。如果您有任何疑問，請在評論中告訴我。DbClient.connect方法的最終版本如下所示：
-''' typescript
+``` typescript
 public async connect() {
     this.db = await MongoClient.connect("mongodb://localhost:27017/test");
     console.log("Connected to db");
     return this.db;
 }
-'''
+```
  
