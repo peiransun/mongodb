@@ -38,6 +38,19 @@ npm install @types/mongodb –save-dev
 ## 在單例對像中存儲數據庫連接
 為了避免在查詢數據庫之前每次都連接到MongoDB，我們將把打開的連接存儲在singleton對像中。讓我們創建一個新文件DbClient.ts並將其保存在公共 文件夾中。單例類將如下所示：
 
+**方法 1 :**
+``` typescript
+import { MongoClient, Db } from "mongodb";
+
+export class DbClient {
+    public db: Db;
+
+    public connect() { /* ... */ }
+}
+ 
+```
+
+**方法 2 :**
 ``` typescript
 import { MongoClient, Db } from "mongodb";
 
@@ -49,11 +62,19 @@ class DbClient {
 
 export = new DbClient();
 ```
-
 在第一行中，我們從mongodb包導入了  MongoClient和Db類型。DbClient類包含一個方法connect（），我們將連接到MongoDB數據庫，然後將連接保存為類成員。在最後一行中，我們導出了一個DbClient類的新實例。每次我們通過調用使用/加載DbClient時都會返回該實例 
+
+**方法 1 :**
+``` typescript
+import { DbClient } from "./common/dbClient";
+```  
+
+
+
+**方法 2 :**
 ``` typescript
 import DbClient = require(“../common/DbClient”);
-```  
+``` 
 
 ## 連接數據庫 - 回調方法
 現在讓我們添加使用MongoClient並連接到數據庫。默認情況下，MongoClient允許您將回調函數作為最後一個參數傳遞，該參數將在建立連接或發生錯誤時調用。
@@ -97,12 +118,46 @@ try {
 
 ## 利用DbClient
 DbClient已準備就緒。在主應用程序文件app.ts中，讓我們通過調用導入它， 
+
+**方法 1:**
+``` typescript
+import { DbClient } from "./common/dbClient";
+``` 
+
+**方法 2:**
 ``` typescript
 import DbClient = require("./common/DbClient");
 ``` 
 
 然後我們可以嘗試連接到數據庫並運行基本查詢：
 
+**方法 1:**
+``` typescript
+try {
+    let db = await new DbClient().connect();
+
+    let results = await db.collection("todo").insertOne({
+        topic: "learn angular.js", progress: 10
+    });
+
+    console.log(results.insertedId);
+
+    let results2 = await db.collection("todo").insertMany([
+        {  topic: "learn typescript", progress: 10 },
+        {  topic: "learn node.js", progress: 10 }
+    ]);
+
+    console.log(results2.insertedIds);
+
+    let docs = await db.collection("todo").find().toArray();
+
+    console.log(docs);
+} catch (error) {
+    console.log("Unable to connect to db");
+}
+```
+
+**方法 2:**
 ``` typescript
 try {
     let db = await DbClient.connect();
